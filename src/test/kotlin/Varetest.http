@@ -1,0 +1,6 @@
+GET http://127.0.0.1:8080/vare
+Accept: application/json
+
+###
+GET http://127.0.0.1:8080/vare/1234567890124
+

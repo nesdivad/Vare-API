@@ -6,7 +6,7 @@ import kotlinx.serialization.*
 
 
 //Table-objekt
-object Varer: Table() {
+object Vare: Table() {
     val ean: Column<Long> = long("ean")
     val navn: Column<String> = varchar("navn", 50)
     var pris: Column<Int> = integer("pris")
@@ -16,8 +16,12 @@ object Varer: Table() {
     val kategori: Column<String> = varchar("kategori", 20)
 }
 
+/*
+Vareklasse som implementerer Serializable-klassen.
+Serialiseres til json-objekter.
+ */
 @Serializable
-data class Vare(
+data class VareClass(
     val ean: Long,
     val navn: String,
     var pris: Int,

@@ -34,7 +34,7 @@ class VareService {
             .singleOrNull()
     }
 
-    suspend fun oppdaterPris(ean: String, pris: String) : Int = dbQuery {
+    suspend fun oppdaterPris(ean: String, pris: String) : Int? = dbQuery {
         Vare.update({ Vare.ean eq ean.toLong() }) {
             it[Vare.pris] = pris.toInt()
         }

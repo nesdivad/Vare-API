@@ -4,10 +4,8 @@ import h577870.dao.DatabaseFactory.dbQuery
 import h577870.entity.VareClass
 import h577870.entity.Vare
 import io.ktor.util.*
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
+import java.lang.reflect.TypeVariable
 
 /*
 Utfører queries på databasen.
@@ -34,9 +32,21 @@ class VareService {
             .singleOrNull()
     }
 
-    suspend fun oppdaterPris(ean: String, pris: String) : Int? = dbQuery {
-        Vare.update({ Vare.ean eq ean.toLong() }) {
-            it[Vare.pris] = pris.toInt()
+    suspend fun oppdaterVare(nyvare: VareClass) : Int? = dbQuery {
+        Vare.update({ Vare.ean eq nyvare.ean }) {
+            it[pris] = nyvare.pris
+            it[sortimentskode] = nyvare.sortimentskode
+        }
+    }
+
+    suspend fun leggTilVare(nyvare: VareClass) : Unit = dbQuery {
+        val ean = Vare.insert {
+            it[ean] = nyvare.ean
+            it[navn] = nyvare.navn
+            it[pris] = nyvare.pris
+            it[sortimentskode] = nyvare.sortimentskode
+            it[kategori] = nyvare.kategori
+            //TODO: Resten...
         }
     }
 

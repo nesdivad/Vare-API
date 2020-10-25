@@ -4,3 +4,16 @@ Accept: application/json
 ###
 GET http://127.0.0.1:8080/vare/1234567890124
 
+###
+PUT http://127.0.0.1:8080/vare/updatePris
+Content-Type: application/json
+
+{
+  "ean":1234567890124,
+  "navn":"appelsin",
+  "pris":10,
+  "beskrivelse":"oransje appelsin",
+  "plu":700,
+  "sortimentskode":"F9",
+  "kategori":"Frukt"
+}

@@ -1,9 +1,12 @@
 package h577870.routes
 
 import h577870.dao.VareService
+import h577870.entity.Vare
+import h577870.entity.VareClass
 import h577870.utils.Validator
 import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.*
 import io.ktor.routing.*
@@ -21,7 +24,24 @@ private fun Route.vareRoutes() {
             val vareliste = vareservice.hentAlleVarer()
             if (vareliste.isNotEmpty()) call.respond(vareliste)
             else call.respondText("Liste med varer er tom / får ikke kontakt med database.",
-            status = HttpStatusCode.NotFound)
+                    status = HttpStatusCode.NotFound)
+        }
+        put("updatePris") {
+            runCatching {
+                val body = call.receive<VareClass>()
+                val nyVare = VareClass(
+                        ean = body.ean,
+                        navn = body.navn,
+                        pris = body.pris,
+                        beskrivelse = body.beskrivelse,
+                        sortimentskode = body.sortimentskode,
+                        plu = body.plu,
+                        kategori = body.kategori)
+                when (vareservice.oppdaterVare(nyVare) ?: 0) {
+                    0 -> call.respondText("Error updating...", status = HttpStatusCode.NotFound)
+                    else -> call.respondText("Updated price on vare with ean ${nyVare.ean} to ${nyVare.pris}")
+                }
+            }.onFailure { error -> print(error) }
         }
         route("/{ean}") {
             /*
@@ -34,36 +54,19 @@ private fun Route.vareRoutes() {
                 )
                 //Validering av ean
                 runCatching { require(validator.validateEan(ean)) }
-                        .onFailure { error -> print(error.message)
-                                .also { call.respondText(
-                        "Wrong format on ean", status = HttpStatusCode.BadRequest)
-                                } }
+                        .onFailure { error ->
+                            print(error.message)
+                                    .also {
+                                        call.respondText(
+                                                "Wrong format on ean", status = HttpStatusCode.BadRequest)
+                                    }
+                        }
 
                 val vare = vareservice.hentVareMedEan(ean.toString().escapeHTML())
                         ?: call.respondText("Varen finnes ikke",
-                        status = HttpStatusCode.NotFound
-                )
+                                status = HttpStatusCode.NotFound
+                        )
                 call.respond(vare)
-            }
-            //Query params liker den ikke...
-            put("?pris={pris}") {
-                val ean = call.parameters["ean"] ?:
-                        call.respondText("Bad request for ean",
-                        status = HttpStatusCode.BadRequest)
-                val pris = call.parameters["pris"] ?:
-                        call.respondText("Bad request for pris",
-                        status = HttpStatusCode.BadRequest)
-                //Errorhandling
-                runCatching {
-                    require(validator.validateEan(ean))
-                    require(validator.validatePris(pris)) }
-                        .onFailure { error -> print(error.message) }
-                        .also { call.respondText("Wrong format for ean/pris",
-                                status = HttpStatusCode.BadRequest) } //END runCatching
-                //Returnerer enten ny pris eller Http.NotFound.
-                val returnvalue = vareservice.oppdaterPris(ean.toString(), pris.toString()) ?:
-                        call.respondText("Vare finnes ikke", status = HttpStatusCode.NotFound)
-                call.respond(returnvalue)
             }
         } // END ean
     } //END vare

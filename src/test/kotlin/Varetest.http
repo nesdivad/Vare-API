@@ -17,3 +17,17 @@ Content-Type: application/json
   "sortimentskode":"F9",
   "kategori":"Frukt"
 }
+
+###
+POST http://127.0.0.1:8080/vare/addVare
+Content-Type: application/json
+
+{
+  "ean": 5021991010217,
+  "navn": "Organic English Breakfast Tea",
+  "pris": 40,
+  "beskrivelse": "Clipper Teas",
+  "plu": null,
+  "sortimentskode": "A3",
+  "kategori": "Tørr"
+}

@@ -40,13 +40,14 @@ class VareService {
     }
 
     suspend fun leggTilVare(nyvare: VareClass) : Unit = dbQuery {
-        val ean = Vare.insert {
+        Vare.insert {
             it[ean] = nyvare.ean
             it[navn] = nyvare.navn
             it[pris] = nyvare.pris
             it[sortimentskode] = nyvare.sortimentskode
             it[kategori] = nyvare.kategori
-            //TODO: Resten...
+            if (nyvare.plu != null) it[plu] = nyvare.plu
+            it[beskrivelse] = nyvare.beskrivelse
         }
     }
 

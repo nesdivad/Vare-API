@@ -17,7 +17,7 @@ val vareservice = VareService()
 val validator = Validator()
 
 @KtorExperimentalAPI
-private fun Route.vareRoutes() {
+private fun Route.vareRoutesGet() {
     route("/vare") {
         //Alle varer
         get {
@@ -26,6 +26,36 @@ private fun Route.vareRoutes() {
             else call.respondText("Liste med varer er tom / får ikke kontakt med database.",
                     status = HttpStatusCode.NotFound)
         }
+        route("/{ean}") {
+            /*
+            Henter vare med ean-kode.
+            Errorhandling ser litt rotete ut, wrapper det i en funksjon senere.
+             */
+            get {
+                val ean = call.parameters["ean"] ?: call.respondText("Bad request",
+                        status = HttpStatusCode.BadRequest)
+                //Validering av ean
+                runCatching { require(validator.validateEan(ean)) }
+                        .onFailure { error -> print(error.message)
+                                    .also {
+                                        call.respondText("Wrong format on ean",
+                                                status = HttpStatusCode.BadRequest)
+                                    }
+                        }
+
+                val vare = vareservice.hentVareMedEan(ean.toString().escapeHTML())
+                        ?: call.respondText("Varen finnes ikke",
+                                status = HttpStatusCode.NotFound
+                        )
+                call.respond(vare)
+            }
+        } // END ean
+    } //END vare
+}
+
+@KtorExperimentalAPI
+private fun Route.vareRoutesPost() {
+    route("/vare") {
         put("updatePris") {
             runCatching {
                 val body = call.receive<VareClass>()
@@ -42,39 +72,31 @@ private fun Route.vareRoutes() {
                     else -> call.respondText("Updated price on vare with ean ${nyVare.ean} to ${nyVare.pris}")
                 }
             }.onFailure { error -> print(error) }
+        }//end PUT
+        post("addVare") {
+            val body = call.receive<VareClass>()
+            val nyVare = VareClass(
+                    ean = body.ean,
+                    navn = body.navn,
+                    pris = body.pris,
+                    beskrivelse = body.beskrivelse,
+                    sortimentskode = body.sortimentskode,
+                    plu = body.plu,
+                    kategori = body.kategori)
+            runCatching {
+                vareservice.leggTilVare(nyVare)
+                call.respondText("Successfully added vare with ean ${nyVare.ean}",
+                    status = HttpStatusCode.OK)
+            }.onFailure { error -> print(error) }
         }
-        route("/{ean}") {
-            /*
-            Henter vare med ean-kode.
-            Errorhandling ser litt rotete ut, wrapper det i en funksjon senere.
-             */
-            get {
-                val ean = call.parameters["ean"] ?: call.respondText("Bad request",
-                        status = HttpStatusCode.BadRequest
-                )
-                //Validering av ean
-                runCatching { require(validator.validateEan(ean)) }
-                        .onFailure { error ->
-                            print(error.message)
-                                    .also {
-                                        call.respondText(
-                                                "Wrong format on ean", status = HttpStatusCode.BadRequest)
-                                    }
-                        }
-
-                val vare = vareservice.hentVareMedEan(ean.toString().escapeHTML())
-                        ?: call.respondText("Varen finnes ikke",
-                                status = HttpStatusCode.NotFound
-                        )
-                call.respond(vare)
-            }
-        } // END ean
-    } //END vare
+    }
 }
+
 //Utvidelsesfunksjon for Application som henter endepunkter for vare.
 @KtorExperimentalAPI
 fun Application.registerVareRoutes() {
     routing {
-        vareRoutes()
+        vareRoutesGet()
+        vareRoutesPost()
     }
 }

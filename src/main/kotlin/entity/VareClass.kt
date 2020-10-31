@@ -16,10 +16,17 @@ object Vare: Table() {
     val kategori: Column<String> = varchar("kategori", 20)
 }
 
-/*
-Vareklasse som implementerer Serializable-klassen.
-Serialiseres til json-objekter.
+/**
+ * @author Kristoffer Davidsen
+ * @param ean -> Artikkelnummer for Vare.
+ * @param navn -> Navn på vare.
+ * @param pris -> Pris på vare.
+ * @param beskrivelse -> Beskrivelse av varen.
+ * @param plu -> Alternativ til ean, kan være null.
+ * @param sortimentskode -> Sortimentskode for vare, bestemmes av varens popularitet osv.
+ * @param kategori -> Kategorien varen tilhører.
  */
+
 @Serializable
 data class VareClass(
     val ean: Long,

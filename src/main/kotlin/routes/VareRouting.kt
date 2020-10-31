@@ -1,15 +1,14 @@
 package h577870.routes
 
 import h577870.dao.VareService
-import h577870.entity.Vare
 import h577870.entity.VareClass
 import h577870.utils.Validator
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
-import io.ktor.util.*
 import io.ktor.routing.*
+import io.ktor.util.*
 
 //Objekt for databaseoperasjoner.
 @KtorExperimentalAPI
@@ -18,6 +17,7 @@ val validator = Validator()
 
 @KtorExperimentalAPI
 private fun Route.vareRoutesGet() {
+
     route("/vare") {
         //Alle varer
         get {
@@ -34,8 +34,9 @@ private fun Route.vareRoutesGet() {
             get {
                 val ean = call.parameters["ean"] ?: call.respondText("Bad request",
                         status = HttpStatusCode.BadRequest)
+                val escaped = ean.toString().escapeHTML()
                 //Validering av ean
-                runCatching { require(validator.validateEan(ean)) }
+                runCatching { require(validator.validateEan(escaped)) }
                         .onFailure { error -> print(error.message)
                                     .also {
                                         call.respondText("Wrong format on ean",
@@ -43,7 +44,7 @@ private fun Route.vareRoutesGet() {
                                     }
                         }
 
-                val vare = vareservice.hentVareMedEan(ean.toString().escapeHTML())
+                val vare = vareservice.hentVareMedEan(escaped)
                         ?: call.respondText("Varen finnes ikke",
                                 status = HttpStatusCode.NotFound
                         )
@@ -53,11 +54,17 @@ private fun Route.vareRoutesGet() {
     } //END vare
 }
 
+/*
+TODO:Authentication
+ */
+
 @KtorExperimentalAPI
 private fun Route.vareRoutesPost() {
-    route("/vare") {
-        put("updatePris") {
-            runCatching {
+        route("/vare") {
+            /*
+            TODO: Escape JSON-obj.
+             */
+            put("updatePris") {
                 val body = call.receive<VareClass>()
                 val nyVare = VareClass(
                         ean = body.ean,
@@ -67,30 +74,38 @@ private fun Route.vareRoutesPost() {
                         sortimentskode = body.sortimentskode,
                         plu = body.plu,
                         kategori = body.kategori)
-                when (vareservice.oppdaterVare(nyVare) ?: 0) {
-                    0 -> call.respondText("Error updating...", status = HttpStatusCode.NotFound)
-                    else -> call.respondText("Updated price on vare with ean ${nyVare.ean} to ${nyVare.pris}")
-                }
-            }.onFailure { error -> print(error) }
-        }//end PUT
-        post("addVare") {
-            val body = call.receive<VareClass>()
-            val nyVare = VareClass(
-                    ean = body.ean,
-                    navn = body.navn,
-                    pris = body.pris,
-                    beskrivelse = body.beskrivelse,
-                    sortimentskode = body.sortimentskode,
-                    plu = body.plu,
-                    kategori = body.kategori)
-            runCatching {
-                vareservice.leggTilVare(nyVare)
-                call.respondText("Successfully added vare with ean ${nyVare.ean}",
-                    status = HttpStatusCode.OK)
-            }.onFailure { error -> print(error) }
+                runCatching {
+                    when (vareservice.oppdaterVare(nyVare) ?: 0) {
+                        0 -> call.respondText("Error updating...", status = HttpStatusCode.NotFound)
+                        else -> call.respondText("Updated price on vare with ean ${nyVare.ean} to ${nyVare.pris}")
+                    }
+                }.onFailure { error -> print(error) }
+            }//end PUT
+
+            post("addVare") {
+                val body = call.receive<VareClass>()
+                val nyVare = VareClass(
+                        ean = body.ean,
+                        navn = body.navn,
+                        pris = body.pris,
+                        beskrivelse = body.beskrivelse,
+                        sortimentskode = body.sortimentskode,
+                        plu = body.plu,
+                        kategori = body.kategori)
+                runCatching {
+                    vareservice.leggTilVare(nyVare)
+                    call.respondText("Successfully added vare with ean ${nyVare.ean}",
+                            status = HttpStatusCode.OK)
+                }.onFailure { error -> print(error) }
+            }
+        }
+    /*
+    For testing purposes
+     */
+        route("/test") {
+            
         }
     }
-}
 
 //Utvidelsesfunksjon for Application som henter endepunkter for vare.
 @KtorExperimentalAPI

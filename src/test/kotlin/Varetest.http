@@ -3,6 +3,7 @@ Accept: application/json
 
 ###
 GET http://127.0.0.1:8080/vare/1234567890124
+Accept: application/json
 
 ###
 PUT http://127.0.0.1:8080/vare/updatePris
@@ -31,3 +32,7 @@ Content-Type: application/json
   "sortimentskode": "A3",
   "kategori": "Tørr"
 }
+
+###
+GET http://127.0.0.1:8080/test
+Accept: application/json

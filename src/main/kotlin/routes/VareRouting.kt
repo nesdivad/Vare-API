@@ -3,6 +3,8 @@ package h577870.routes
 import h577870.dao.VareService
 import h577870.entity.VareClass
 import h577870.utils.Validator
+import h577870.utils.validator
+import h577870.utils.vareservice
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -12,10 +14,7 @@ import io.ktor.util.*
 
 //Objekt for databaseoperasjoner.
 @KtorExperimentalAPI
-val vareservice = VareService()
-val validator = Validator()
 
-@KtorExperimentalAPI
 private fun Route.vareRoutesGet() {
 
     route("/vare") {

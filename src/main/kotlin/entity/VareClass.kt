@@ -3,6 +3,11 @@ package h577870.entity
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 
 
 //Table-objekt
@@ -37,3 +42,4 @@ data class VareClass(
     var sortimentskode: String,
     val kategori: String
 )
+

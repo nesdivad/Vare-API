@@ -36,3 +36,7 @@ Content-Type: application/json
 ###
 GET http://127.0.0.1:8080/test
 Accept: application/json
+
+###
+GET http://127.0.0.1:8080/bruker/bruker1
+Accept: application/json

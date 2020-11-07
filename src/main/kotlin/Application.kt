@@ -1,6 +1,7 @@
 package h577870
 
 import h577870.dao.DatabaseFactory
+import h577870.routes.registerBrukerRoutes
 import h577870.routes.registerVareRoutes
 import h577870.security.JwtToken
 import io.ktor.application.*
@@ -41,6 +42,7 @@ fun Application.module(testing: Boolean = false) {
 
     //Registrerer endepunkter for Vare-databasen.
     registerVareRoutes()
+    registerBrukerRoutes()
     //Initialiserer databasetilkobling.
     DatabaseFactory.init()
 }

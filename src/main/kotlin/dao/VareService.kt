@@ -1,11 +1,10 @@
 package h577870.dao
 
 import h577870.dao.DatabaseFactory.dbQuery
-import h577870.entity.VareClass
 import h577870.entity.Vare
+import h577870.entity.VareClass
 import io.ktor.util.*
 import org.jetbrains.exposed.sql.*
-import java.lang.reflect.TypeVariable
 
 /*
 Utfører queries på databasen.

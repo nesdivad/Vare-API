@@ -43,6 +43,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("org.springframework.security:spring-security-crypto:5.4.1")
 
     compile("org.postgresql:postgresql:42.2.2")
     compile("org.jetbrains.exposed", "exposed-core", "0.24.1")
@@ -50,6 +51,7 @@ dependencies {
     compile("org.jetbrains.exposed", "exposed-jdbc", "0.24.1")
 
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+
 }
 flyway {
     url = System.getenv("DB_URL")

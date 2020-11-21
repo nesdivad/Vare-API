@@ -2,14 +2,13 @@ package h577870
 
 import h577870.dao.DatabaseFactory
 import h577870.routes.registerBrukerRoutes
+import h577870.routes.registerOppgaveRoutes
 import h577870.routes.registerVareRoutes
 import h577870.security.JwtToken
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
-import io.ktor.response.*
-import io.ktor.request.*
 import io.ktor.serialization.*
 import io.ktor.util.*
 
@@ -17,8 +16,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
-@kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
+fun Application.module() {
 
     /*
     Implementeres senere...
@@ -43,6 +41,7 @@ fun Application.module(testing: Boolean = false) {
     //Registrerer endepunkter for Vare-databasen.
     registerVareRoutes()
     registerBrukerRoutes()
+    registerOppgaveRoutes()
     //Initialiserer databasetilkobling.
     DatabaseFactory.init()
 }

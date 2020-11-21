@@ -2,9 +2,9 @@ package h577870.entity
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
-import kotlin.reflect.KClass
 
 /**
  * @author Kristoffer Davidsen
@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
 @ExperimentalSerializationApi
 @Serializable
 data class OppgaveClass(
-        val oppgaveid: Int,
+        var oppgaveid: Int? = null,
         val brukerid: String,
         val tittel: String,
         val beskrivelse: String,
@@ -37,14 +37,13 @@ selv om det blir inkonsistent med lagringsform av varelisten i Kvittering i data
 Dette handler mest om utforsking av forskjellige måter å gjøre ting på :).
  */
 @ExperimentalSerializationApi
-object Oppgave : Table() {
+object Oppgave : IntIdTable(columnName = "oppgaveid") {
         val oppgaveid: Column<Int> = integer("oppgaveid").autoIncrement("Oppgave_oppgaveid_seq")
         val brukerid: Column<String> = varchar("brukerid", length = 50)
                 .references(Bruker.brukernavn)
         val tittel: Column<String> = varchar("tittel", length = 50)
         val beskrivelse: Column<String> = varchar("beskrivelse", length = 200)
         var vareliste: Column<String> = varchar("vareliste", length = Int.MAX_VALUE)
-        val type: Column<OppgaveType> = enumeration("type", OppgaveType::class)
-        var status: Column<OppgaveStatus> = enumeration("status", OppgaveStatus::class)
-        val oppgave_key = PrimaryKey(oppgaveid, name = "oppgave_pkey")
+        val type: Column<String> = varchar("type", length = 20)
+        var status: Column<String> = varchar("status", length = 20)
 }

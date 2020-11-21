@@ -64,36 +64,20 @@ private fun Route.vareRoutesPost() {
             TODO: Escape JSON-obj.
              */
             put("updatePris") {
-                val body = call.receive<VareClass>()
-                val nyVare = VareClass(
-                        ean = body.ean,
-                        navn = body.navn,
-                        pris = body.pris,
-                        beskrivelse = body.beskrivelse,
-                        sortimentskode = body.sortimentskode,
-                        plu = body.plu,
-                        kategori = body.kategori)
                 runCatching {
-                    when (vareservice.oppdaterVare(nyVare) ?: 0) {
+                    val body = call.receive<VareClass>()
+                    when (vareservice.oppdaterVare(body) ?: 0) {
                         0 -> call.respondText("Error updating...", status = HttpStatusCode.NotFound)
-                        else -> call.respondText("Updated price on vare with ean ${nyVare.ean} to ${nyVare.pris}")
+                        else -> call.respondText("Updated price on vare with ean ${body.ean} to ${body.pris}")
                     }
                 }.onFailure { error -> print(error) }
             }//end PUT
 
-            post("addVare") {
-                val body = call.receive<VareClass>()
-                val nyVare = VareClass(
-                        ean = body.ean,
-                        navn = body.navn,
-                        pris = body.pris,
-                        beskrivelse = body.beskrivelse,
-                        sortimentskode = body.sortimentskode,
-                        plu = body.plu,
-                        kategori = body.kategori)
+            post("nyVare") {
                 runCatching {
-                    vareservice.leggTilVare(nyVare)
-                    call.respondText("Successfully added vare with ean ${nyVare.ean}",
+                    val body = call.receive<VareClass>()
+                    vareservice.leggTilVare(body)
+                    call.respondText("Successfully added vare with ean ${body.ean}",
                             status = HttpStatusCode.OK)
                 }.onFailure { error -> print(error) }
             }

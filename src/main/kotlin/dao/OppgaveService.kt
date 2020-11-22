@@ -16,13 +16,13 @@ class OppgaveService {
 
     suspend fun hentOppgaveMedId(oppgaveid: Int): OppgaveClass? = dbQuery {
         Oppgave.select {
-            (Oppgave.oppgaveid eq oppgaveid)
+            (Oppgave.id eq oppgaveid)
         }.mapNotNull {
             convertJsonToClass(it)
         }.singleOrNull()
     }
 
-    suspend fun leggTilOppgave(oppgaveClass: OppgaveClass): EntityID<Int> = dbQuery {
+    suspend fun leggTilOppgave(oppgaveClass: OppgaveClass): Int = dbQuery {
         return@dbQuery Oppgave.insertAndGetId {
             it[brukerid] = oppgaveClass.brukerid
             it[tittel] = oppgaveClass.tittel
@@ -30,7 +30,7 @@ class OppgaveService {
             it[vareliste] = Json.encodeToString(oppgaveClass.vareliste)
             it[type] = Json.encodeToString(OppgaveTypeSerializer, oppgaveClass.type as OppgaveType)
             it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status as OppgaveStatus)
-        }
+        }.value
     }
 
     suspend fun hentOppgaverMedBrukerid(brukerid: String): List<OppgaveClass>? = dbQuery {
@@ -41,19 +41,18 @@ class OppgaveService {
         }.toList()
     }
 
-    suspend fun oppdaterOppgave(oppgaveClass: OppgaveClass): EntityID<Int> = dbQuery {
-        return@dbQuery Oppgave.insertAndGetId {
-
+    suspend fun oppdaterOppgave(oppgaveClass: OppgaveClass): Int = dbQuery {
+        return@dbQuery Oppgave.update({Oppgave.id eq oppgaveClass.oppgaveid}) {
+            it[vareliste] = Json.encodeToString(oppgaveClass.vareliste)
+            it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status as OppgaveStatus)
         }
     }
 
     @ExperimentalSerializationApi
     private fun convertJsonToClass(row: ResultRow) : OppgaveClass {
-
         val listFromRow = row[Oppgave.vareliste]
-
         return OppgaveClass(
-                oppgaveid = row[Oppgave.oppgaveid],
+                oppgaveid = row[Oppgave.id].value,
                 brukerid = row[Oppgave.brukerid],
                 tittel = row[Oppgave.tittel],
                 beskrivelse = row[Oppgave.beskrivelse],

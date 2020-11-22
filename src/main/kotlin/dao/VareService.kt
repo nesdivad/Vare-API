@@ -24,6 +24,12 @@ class VareService {
             .singleOrNull()
     }
 
+    suspend fun hentVarerMedKategori(kategori: String) : List<VareClass>? = dbQuery {
+        Vare.selectAll().andWhere {
+            (Vare.kategori eq kategori)
+        }.mapNotNull { convertVare(it) }
+    }
+
     suspend fun hentVareMedNavn(navn: String) : VareClass? = dbQuery {
         Vare.select {
             (Vare.navn eq navn)

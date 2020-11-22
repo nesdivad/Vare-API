@@ -1,6 +1,7 @@
 package h577870.routes
 
 import h577870.entity.OppgaveClass
+import h577870.utils.ErrorMessages
 import h577870.utils.oppgaveservice
 import io.ktor.application.*
 import io.ktor.http.*
@@ -9,6 +10,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import java.lang.AssertionError
 
 @ExperimentalSerializationApi
 @KtorExperimentalAPI
@@ -30,10 +32,9 @@ private fun Route.oppgaveRoutes() {
             runCatching {
                 val body = call.receive<OppgaveClass>()
                 val id = oppgaveservice.leggTilOppgave(body)
-                call.respondText("Lagt til oppgave med id ${id.value}", status = HttpStatusCode.OK)
+                call.respondText("Lagt til oppgave med id $id", status = HttpStatusCode.OK)
             }.onFailure {
-                //Lage mer detaljerte feilmeldinger, som i brukerrouting.
-                call.respondText("En feil oppsto: ${it.localizedMessage}")
+                ErrorMessages.returnMessage(it, call)
             }
         }
         put("oppdater") {
@@ -41,9 +42,10 @@ private fun Route.oppgaveRoutes() {
                 val body = call.receive<OppgaveClass>()
                 requireNotNull(body.oppgaveid)
                 val id = oppgaveservice.oppdaterOppgave(body)
-                call.respondText("Oppdatert oppgave med id ${id.value}", status = HttpStatusCode.OK)
+                assert(body.oppgaveid == id)
+                call.respondText("Oppdatert oppgave med id $id", status = HttpStatusCode.OK)
             }.onFailure {
-                call.respondText("En feil oppsto: ${it.localizedMessage}")
+                ErrorMessages.returnMessage(it, call)
             }
         }
     }

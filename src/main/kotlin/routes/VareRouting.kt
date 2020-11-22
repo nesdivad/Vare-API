@@ -2,6 +2,7 @@ package h577870.routes
 
 import h577870.dao.VareService
 import h577870.entity.VareClass
+import h577870.utils.ErrorMessages
 import h577870.utils.Validator
 import h577870.utils.validator
 import h577870.utils.vareservice
@@ -36,12 +37,7 @@ private fun Route.vareRoutesGet() {
                 val escaped = ean.toString().escapeHTML()
                 //Validering av ean
                 runCatching { require(validator.validateEan(escaped)) }
-                        .onFailure { error -> print(error.message)
-                                    .also {
-                                        call.respondText("Wrong format on ean",
-                                                status = HttpStatusCode.BadRequest)
-                                    }
-                        }
+                        .onFailure { ErrorMessages.returnMessage(it, call) }
 
                 val vare = vareservice.hentVareMedEan(escaped)
                         ?: call.respondText("Varen finnes ikke",
@@ -70,7 +66,7 @@ private fun Route.vareRoutesPost() {
                         0 -> call.respondText("Error updating...", status = HttpStatusCode.NotFound)
                         else -> call.respondText("Updated price on vare with ean ${body.ean} to ${body.pris}")
                     }
-                }.onFailure { error -> print(error) }
+                }.onFailure { ErrorMessages.returnMessage(it, call) }
             }//end PUT
 
             post("nyVare") {
@@ -79,7 +75,7 @@ private fun Route.vareRoutesPost() {
                     vareservice.leggTilVare(body)
                     call.respondText("Successfully added vare with ean ${body.ean}",
                             status = HttpStatusCode.OK)
-                }.onFailure { error -> print(error) }
+                }.onFailure { ErrorMessages.returnMessage(it, call) }
             }
         }
     /*

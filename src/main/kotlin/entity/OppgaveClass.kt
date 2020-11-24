@@ -27,10 +27,9 @@ data class OppgaveClass(
         val beskrivelse: String,
         val vareliste: List<VareClass>,
         @Serializable(with = OppgaveTypeSerializer::class)
-        val type: Enum<OppgaveType>,
+        val type: OppgaveType,
         @Serializable(with = OppgaveStatusSerializer::class)
-        val status: Enum<OppgaveStatus>,
-
+        val status: OppgaveStatus,
         )
 /*
 Vareliste i dette tilfelle vil være en Json-streng,

@@ -28,8 +28,8 @@ class OppgaveService {
             it[tittel] = oppgaveClass.tittel
             it[beskrivelse] = oppgaveClass.beskrivelse
             it[vareliste] = Json.encodeToString(oppgaveClass.vareliste)
-            it[type] = Json.encodeToString(OppgaveTypeSerializer, oppgaveClass.type as OppgaveType)
-            it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status as OppgaveStatus)
+            it[type] = Json.encodeToString(OppgaveTypeSerializer, oppgaveClass.type)
+            it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status)
         }.value
     }
 
@@ -44,7 +44,7 @@ class OppgaveService {
     suspend fun oppdaterOppgave(oppgaveClass: OppgaveClass): Int = dbQuery {
         return@dbQuery Oppgave.update({Oppgave.id eq oppgaveClass.oppgaveid}) {
             it[vareliste] = Json.encodeToString(oppgaveClass.vareliste)
-            it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status as OppgaveStatus)
+            it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status)
         }
     }
 

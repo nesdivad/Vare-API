@@ -34,12 +34,12 @@ object Vare: Table() {
 
 @Serializable
 data class VareClass(
-    val ean: Long,
-    val navn: String,
-    var pris: Int,
-    val beskrivelse: String,
-    val plu: Int?,
-    var sortimentskode: String,
-    val kategori: String
-)
+        override val ean: Long,
+        val navn: String,
+        var pris: Int,
+        val beskrivelse: String,
+        val plu: Int?,
+        var sortimentskode: String,
+        val kategori: String
+) : Ean
 

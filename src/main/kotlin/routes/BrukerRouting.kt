@@ -1,6 +1,8 @@
 package h577870.routes
 
 import h577870.entity.BrukerClass
+import h577870.module
+import h577870.security.JwtToken
 import h577870.utils.brukerservice
 import io.ktor.application.*
 import io.ktor.http.*
@@ -28,8 +30,8 @@ private fun Route.brukerRouting() {
                 val dbbruker = brukerservice.hentBruker(body.brukernavn)
                 requireNotNull(dbbruker)
                 if (BrukerClass.kontrollerBruker(body, dbbruker)) {
-                    //Sende med token, sesjon osv.
-                    call.respond(HttpStatusCode.Accepted, "Bruker ${body.brukernavn} er logget inn.")
+                        val simplejwt = JwtToken(application.environment.config.property("jwt.secret").getString())
+                        call.respond(HttpStatusCode.Accepted, mapOf("token" to simplejwt.sign(dbbruker.brukernavn)))
                 }
             }.onFailure {
                 when (it) {

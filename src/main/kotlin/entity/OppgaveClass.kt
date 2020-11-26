@@ -25,11 +25,11 @@ data class OppgaveClass(
         val brukerid: String,
         val tittel: String,
         val beskrivelse: String,
-        val vareliste: List<VareClass>,
+        var vareliste: MutableMap<Long, Double>,
         @Serializable(with = OppgaveTypeSerializer::class)
         val type: OppgaveType,
         @Serializable(with = OppgaveStatusSerializer::class)
-        val status: OppgaveStatus,
+        var status: OppgaveStatus,
         )
 /*
 Vareliste i dette tilfelle vil være en Json-streng,

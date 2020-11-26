@@ -46,9 +46,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.springframework.security:spring-security-crypto:5.4.1")
     implementation("org.postgresql:postgresql:42.2.2")
-
+    implementation("com.rabbitmq:amqp-client:5.9.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-
 }
 flyway {
     url = System.getenv("DB_URL")

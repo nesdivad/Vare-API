@@ -14,14 +14,5 @@ object Bruker : Table() {
 @Serializable
 data class BrukerClass(
         val brukernavn: String,
-        //TODO: Serialisering på passord. Bcrypt.
         val passord: String
-) {
-
-    companion object {
-        val bcrypt = BCryptPasswordEncoder()
-        fun kontrollerBruker(body: BrukerClass, dbbruker: BrukerClass): Boolean {
-            return bcrypt.matches(body.passord, dbbruker.passord)
-        }
-    }
-}
+)

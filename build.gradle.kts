@@ -47,6 +47,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-crypto:5.4.1")
     implementation("org.postgresql:postgresql:42.2.2")
     implementation("com.rabbitmq:amqp-client:5.9.0")
+    implementation("commons-logging:commons-logging:1.2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 flyway {

@@ -6,6 +6,7 @@ import h577870.entity.BrukerClass
 import io.ktor.util.*
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @KtorExperimentalAPI
 class BrukerService {
@@ -16,6 +17,11 @@ class BrukerService {
         }.mapNotNull {
             convertBruker(it)
         }.singleOrNull()
+    }
+
+    private val bcrypt = BCryptPasswordEncoder()
+    fun kontrollerBruker(body: BrukerClass, dbbruker: BrukerClass): Boolean {
+        return bcrypt.matches(body.passord, dbbruker.passord)
     }
 
     private fun convertBruker(row: ResultRow): BrukerClass {

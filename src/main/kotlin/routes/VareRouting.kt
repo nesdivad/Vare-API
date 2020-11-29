@@ -7,6 +7,7 @@ import h577870.utils.Validator
 import h577870.utils.validator
 import h577870.utils.vareservice
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -17,36 +18,37 @@ import io.ktor.util.*
 @KtorExperimentalAPI
 
 private fun Route.vareRoutesGet() {
-
-    route("/vare") {
-        //Alle varer
-        get {
-            val vareliste = vareservice.hentAlleVarer()
-            if (vareliste.isNotEmpty()) call.respond(vareliste)
-            else call.respondText("Liste med varer er tom / får ikke kontakt med database.",
-                    status = HttpStatusCode.NotFound)
-        }
-        route("/{ean}") {
-            /*
+    authenticate {
+        route("/vare") {
+            //Alle varer
+            get {
+                val vareliste = vareservice.hentAlleVarer()
+                if (vareliste.isNotEmpty()) call.respond(vareliste)
+                else call.respondText("Liste med varer er tom / får ikke kontakt med database.",
+                        status = HttpStatusCode.NotFound)
+            }
+            route("/{ean}") {
+                /*
             Henter vare med ean-kode.
             Errorhandling ser litt rotete ut, wrapper det i en funksjon senere.
              */
-            get {
-                val ean = call.parameters["ean"] ?: call.respondText("Bad request",
-                        status = HttpStatusCode.BadRequest)
-                val escaped = ean.toString().escapeHTML()
-                //Validering av ean
-                runCatching { require(validator.validateEan(escaped)) }
-                        .onFailure { ErrorMessages.returnMessage(it, call) }
+                get {
+                    val ean = call.parameters["ean"] ?: call.respondText("Bad request",
+                            status = HttpStatusCode.BadRequest)
+                    val escaped = ean.toString().escapeHTML()
+                    //Validering av ean
+                    runCatching { require(validator.validateEan(escaped)) }
+                            .onFailure { ErrorMessages.returnMessage(it, call) }
 
-                val vare = vareservice.hentVareMedEan(escaped)
-                        ?: call.respondText("Varen finnes ikke",
-                                status = HttpStatusCode.NotFound
-                        )
-                call.respond(vare)
-            }
-        } // END ean
-    } //END vare
+                    val vare = vareservice.hentVareMedEan(escaped)
+                            ?: call.respondText("Varen finnes ikke",
+                                    status = HttpStatusCode.NotFound
+                            )
+                    call.respond(vare)
+                }
+            } // END ean
+        } //END vare
+    }
 }
 
 /*
@@ -55,6 +57,7 @@ TODO:Authentication
 
 @KtorExperimentalAPI
 private fun Route.vareRoutesPost() {
+    authenticate {
         route("/vare") {
             /*
             TODO: Escape JSON-obj.
@@ -78,13 +81,8 @@ private fun Route.vareRoutesPost() {
                 }.onFailure { ErrorMessages.returnMessage(it, call) }
             }
         }
-    /*
-    For testing purposes
-     */
-        route("/test") {
-            
-        }
     }
+}
 
 //Utvidelsesfunksjon for Application som henter endepunkter for vare.
 @KtorExperimentalAPI

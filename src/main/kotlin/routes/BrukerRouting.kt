@@ -9,10 +9,12 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.sessions.*
 import io.ktor.util.*
 
 @KtorExperimentalAPI
 private fun Route.brukerRouting() {
+    val simplejwt = JwtToken(application.environment.config.property("jwt.secret").getString())
     route("/bruker") {
         get("{brukerid}") {
             val brukerid = call.parameters["brukerid"] ?: call.respondText("Bad request",
@@ -29,9 +31,10 @@ private fun Route.brukerRouting() {
                 val body = call.receive<BrukerClass>()
                 val dbbruker = brukerservice.hentBruker(body.brukernavn)
                 requireNotNull(dbbruker)
-                if (BrukerClass.kontrollerBruker(body, dbbruker)) {
-                        val simplejwt = JwtToken(application.environment.config.property("jwt.secret").getString())
-                        call.respond(HttpStatusCode.Accepted, mapOf("token" to simplejwt.sign(dbbruker.brukernavn)))
+                if (brukerservice.kontrollerBruker(body, dbbruker)) {
+                        call.respond(HttpStatusCode.Accepted, mapOf(
+                                "jwttoken" to simplejwt.sign(dbbruker.brukernavn)
+                        ))
                 }
             }.onFailure {
                 when (it) {

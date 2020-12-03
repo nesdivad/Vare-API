@@ -2,10 +2,8 @@ package h577870.routes
 
 import h577870.dao.VareService
 import h577870.entity.VareClass
-import h577870.utils.ErrorMessages
-import h577870.utils.Validator
-import h577870.utils.validator
-import h577870.utils.vareservice
+import h577870.entity.VareEgenskaperClass
+import h577870.utils.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -35,7 +33,7 @@ private fun Route.vareRoutesGet() {
                 get {
                     val ean = call.parameters["ean"] ?: call.respondText("Bad request",
                             status = HttpStatusCode.BadRequest)
-                    val escaped = ean.toString().escapeHTML()
+                    val escaped = ean.toString()
                     //Validering av ean
                     runCatching { require(validator.validateEan(escaped)) }
                             .onFailure { ErrorMessages.returnMessage(it, call) }
@@ -76,8 +74,19 @@ private fun Route.vareRoutesPost() {
                 runCatching {
                     val body = call.receive<VareClass>()
                     vareservice.leggTilVare(body)
-                    call.respondText("Successfully added vare with ean ${body.ean}",
-                            status = HttpStatusCode.OK)
+                    vareeservice.leggTilEgenskap(
+                        VareEgenskaperClass(
+                            ean = body.ean,
+                            beholdning = 10.0,
+                            prestasjonslager = 5,
+                            dekningsperiode = 7,
+                            snittsalg = 0.0
+                        )
+                    )
+                    call.respondText(
+                        "Successfully added vare with ean ${body.ean}",
+                        status = HttpStatusCode.OK
+                    )
                 }.onFailure { ErrorMessages.returnMessage(it, call) }
             }
         }
@@ -92,3 +101,4 @@ fun Application.registerVareRoutes() {
         vareRoutesPost()
     }
 }
+

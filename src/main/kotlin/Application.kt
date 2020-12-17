@@ -58,6 +58,10 @@ fun Application.module() {
     //Initialiserer databasetilkobling.
     DatabaseFactory.init()
 
+    transaction {
+
+    }
+
     /*
     val oppgave = OppgaveClass(
         oppgaveid = 10,

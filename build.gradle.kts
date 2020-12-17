@@ -26,6 +26,7 @@ version = "0.0.1"
 repositories {
     mavenLocal()
     jcenter()
+    maven(url = "https://kotlin.bintray.com/kotlinx/")
 }
 /*
 Trenger jeg alle disse? Det finner vi ut av en annen dag...
@@ -48,6 +49,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.2")
     implementation("com.rabbitmq:amqp-client:5.9.0")
     implementation("commons-logging:commons-logging:1.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 flyway {

@@ -4,16 +4,17 @@ import h577870.entity.OppgaveClass
 import h577870.entity.OppgaveStatus
 import h577870.entity.OppgaveType
 import h577870.entity.VareClass
+import h577870.utils.Oppgavehjelper
 import h577870.utils.oppgaveservice
 import io.ktor.util.*
+import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.time.LocalDateTime
 
+@KtorExperimentalAPI
+@ExperimentalSerializationApi
 object OppgaveGenerator {
-    init {
 
-    }
-    @ExperimentalSerializationApi
     fun generateBestilling(brukerid: String, kategori: String): OppgaveClass {
         return OppgaveClass(
             oppgaveid = 0,
@@ -22,12 +23,12 @@ object OppgaveGenerator {
             beskrivelse = "Bestilling av ${kategori}varer.",
             vareliste = mutableMapOf(),
             type = OppgaveType.BESTILLING,
-            status = OppgaveStatus.IKKESTARTET
+            status = OppgaveStatus.IKKESTARTET,
+            tidogdato = Clock.System.now(),
+            tidsfrist = Oppgavehjelper.bestemFrist(OppgaveType.BESTILLING)
         )
     }
 
-    @KtorExperimentalAPI
-    @ExperimentalSerializationApi
     suspend fun oppdaterBestilling(nyliste: Map<Long, Double>, status: OppgaveStatus, id: Int): String {
         val dboppgave = oppgaveservice.hentOppgaveMedId(id) ?: return "Finner ikke oppgave i database."
         nyliste.forEach { (t, u) ->

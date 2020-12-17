@@ -2,12 +2,13 @@ package h577870.dao
 
 import h577870.dao.DatabaseFactory.dbQuery
 import h577870.entity.*
+import h577870.utils.Oppgavehjelper
 import io.ktor.util.*
+import kotlinx.datetime.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 
 @KtorExperimentalAPI
@@ -30,10 +31,12 @@ class OppgaveService {
             it[vareliste] = Json.encodeToString(oppgaveClass.vareliste)
             it[type] = Json.encodeToString(OppgaveTypeSerializer, oppgaveClass.type)
             it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status)
+            it[tidogdato] = Json.encodeToString(TidSerializer, Clock.System.now())
+            it[tidsfrist] = Json.encodeToString(TidSerializer, Oppgavehjelper.bestemFrist(oppgaveClass.type))
         }.value
     }
 
-    suspend fun hentOppgaverMedBrukerid(brukerid: String): List<OppgaveClass>? = dbQuery {
+    suspend fun hentOppgaverMedBrukerid(brukerid: String): List<OppgaveClass> = dbQuery {
         Oppgave.selectAll().andWhere {
             (Oppgave.brukerid eq brukerid)
         }.mapNotNull {
@@ -48,7 +51,6 @@ class OppgaveService {
         }
     }
 
-    @ExperimentalSerializationApi
     private fun convertJsonToClass(row: ResultRow) : OppgaveClass {
         val listFromRow = row[Oppgave.vareliste]
         return OppgaveClass(
@@ -58,7 +60,9 @@ class OppgaveService {
                 beskrivelse = row[Oppgave.beskrivelse],
                 type = Json.decodeFromString(OppgaveTypeSerializer, string = row[Oppgave.type]),
                 status = Json.decodeFromString(OppgaveStatusSerializer, string = row[Oppgave.status]),
-                vareliste = Json.decodeFromString(listFromRow)
+                vareliste = Json.decodeFromString(listFromRow),
+                tidogdato = Json.decodeFromString(TidSerializer, row[Oppgave.tidogdato]),
+                tidsfrist = Json.decodeFromString(TidSerializer, row[Oppgave.tidsfrist])
         )
     }
 }

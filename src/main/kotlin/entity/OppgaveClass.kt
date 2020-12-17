@@ -5,7 +5,9 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Table
+import kotlinx.datetime.*
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 /**
  * @author Kristoffer Davidsen
@@ -30,6 +32,10 @@ data class OppgaveClass(
         val type: OppgaveType,
         @Serializable(with = OppgaveStatusSerializer::class)
         var status: OppgaveStatus,
+        @Serializable(with = TidSerializer::class)
+        val tidogdato: Instant,
+        @Serializable(with = TidSerializer::class)
+        val tidsfrist: Instant
         )
 /*
 Vareliste i dette tilfelle vil være en Json-streng,
@@ -47,4 +53,6 @@ object Oppgave : IntIdTable("oppgave", "id") {
         var vareliste: Column<String> = varchar("vareliste", length = 10485759)
         val type: Column<String> = varchar("type", length = 20)
         var status: Column<String> = varchar("status", length = 20)
+        val tidogdato: Column<String> = varchar("tidogdato", length = 50)
+        val tidsfrist: Column<String> = varchar("tidsfrist", length = 50)
 }

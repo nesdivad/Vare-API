@@ -1,11 +1,14 @@
 package h577870.dao
 
 import h577870.dao.DatabaseFactory.dbQuery
+import h577870.entity.VareClass
 import h577870.entity.VareEgenskaper
 import h577870.entity.VareEgenskaperClass
 import io.ktor.util.*
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.statements.BatchUpdateStatement
+import org.jetbrains.exposed.sql.update
 
 @KtorExperimentalAPI
 class VareEService {
@@ -32,5 +35,9 @@ class VareEService {
             it[snittsalg] = vareEgenskaperClass.snittsalg
         }
     }
+
+    /*
+    TODO: Batch-oppdatering av egenskaper fra salgsmelding.
+     */
 
 }

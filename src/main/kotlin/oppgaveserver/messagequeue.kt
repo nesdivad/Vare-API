@@ -1,7 +1,9 @@
 package h577870.oppgaveserver
 
 import h577870.entity.OppgaveClass
+import h577870.entity.VareClass
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -11,7 +13,7 @@ import kotlin.NoSuchElementException
 /*
 Singleton for messagequeue
  */
-object messagequeue {
+object Oppgaveequeue {
 
     private val oppgaveliste: LinkedList<OppgaveClass> = LinkedList()
     /*         Internal methods             */
@@ -45,6 +47,19 @@ object messagequeue {
             "204" //Http Code for No Content
         }
     }
+}
 
+object Kassequeue {
+
+    private val kasseliste: MutableList<MutableMap<VareClass, Double>> = mutableListOf()
+
+    @Synchronized fun addMelding(melding: String) {
+        val decoded = Json.decodeFromString<MutableMap<VareClass, Double>>(melding)
+        kasseliste.add(decoded)
+    }
+
+    @Synchronized fun retrieveMelding() : MutableMap<VareClass, Double> {
+        return kasseliste.removeFirst()
+    }
 
 }

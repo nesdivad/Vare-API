@@ -3,6 +3,7 @@ package h577870
 import h577870.dao.DatabaseFactory
 import h577870.entity.*
 import h577870.routes.registerBrukerRoutes
+import h577870.routes.registerKasseRouting
 import h577870.routes.registerOppgaveRoutes
 import h577870.routes.registerVareRoutes
 import h577870.security.JwtToken
@@ -49,12 +50,14 @@ fun Application.module() {
                 UserIdPrincipal(it.payload.getClaim("name").asString())
             }
         }
+
     }
 
     //Registrerer endepunkter for Vare-databasen.
     registerVareRoutes()
     registerBrukerRoutes()
     registerOppgaveRoutes()
+    registerKasseRouting()
     //Initialiserer databasetilkobling.
     DatabaseFactory.init()
 

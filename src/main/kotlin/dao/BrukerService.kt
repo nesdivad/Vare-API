@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @KtorExperimentalAPI
 class BrukerService {
+    
+    private val bcrypt = BCryptPasswordEncoder()
 
     suspend fun hentBruker(brukerid: String) : BrukerClass? = dbQuery {
         Bruker.select {
@@ -19,7 +21,6 @@ class BrukerService {
         }.singleOrNull()
     }
 
-    private val bcrypt = BCryptPasswordEncoder()
     fun kontrollerBruker(body: BrukerClass, dbbruker: BrukerClass): Boolean {
         return bcrypt.matches(body.passord, dbbruker.passord)
     }
@@ -27,7 +28,9 @@ class BrukerService {
     private fun convertBruker(row: ResultRow): BrukerClass {
         return BrukerClass(
                 brukernavn = row[Bruker.brukernavn],
-                passord = row[Bruker.passord]
+                passord = row[Bruker.passord],
+                butikknr = row[Bruker.butikknr],
+                privilege = row[Bruker.privilege]
         )
     }
 

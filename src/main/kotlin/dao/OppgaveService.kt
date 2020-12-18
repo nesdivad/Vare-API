@@ -31,12 +31,12 @@ class OppgaveService {
             it[vareliste] = Json.encodeToString(oppgaveClass.vareliste)
             it[type] = Json.encodeToString(OppgaveTypeSerializer, oppgaveClass.type)
             it[status] = Json.encodeToString(OppgaveStatusSerializer, oppgaveClass.status)
-            it[tidogdato] = Json.encodeToString(TidSerializer, Clock.System.now())
-            it[tidsfrist] = Json.encodeToString(TidSerializer, Oppgavehjelper.bestemFrist(oppgaveClass.type))
+            it[tidogdato] = Json.encodeToString(TidSerializer, oppgaveClass.tidogdato)
+            it[tidsfrist] = Json.encodeToString(TidSerializer, oppgaveClass.tidsfrist)
         }.value
     }
 
-    suspend fun hentOppgaverMedBrukerid(brukerid: String): List<OppgaveClass> = dbQuery {
+    suspend fun hentOppgaverMedBrukerid(brukerid: String): List<OppgaveClass>? = dbQuery {
         Oppgave.selectAll().andWhere {
             (Oppgave.brukerid eq brukerid)
         }.mapNotNull {

@@ -3,6 +3,7 @@ package h577870.routes
 import h577870.entity.BrukerClass
 import h577870.module
 import h577870.security.JwtToken
+import h577870.utils.ErrorMessages
 import h577870.utils.brukerservice
 import io.ktor.application.*
 import io.ktor.http.*
@@ -37,13 +38,7 @@ private fun Route.brukerRouting() {
                         ))
                 }
             }.onFailure {
-                when (it) {
-                    is ContentTransformationException -> call.respondText("Kunne ikke hente bruker fra request",
-                        status = HttpStatusCode.BadRequest)
-                    is IllegalArgumentException -> call.respondText("Bruker finnes ikke i databasen",
-                        status = HttpStatusCode.NotFound)
-                    else -> call.respondText("En feil oppsto: ${it.localizedMessage}")
-                }
+                ErrorMessages.returnMessage(it, call)
             }
 
         }

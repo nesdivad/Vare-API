@@ -12,8 +12,12 @@ import kotlin.NoSuchElementException
 @ExperimentalSerializationApi
 /*
 Singleton for messagequeue
+Etterhvert som oppgaver oppdateres, havner de på denne køen.
+
  */
+
 object Oppgaveequeue {
+
 
     private val oppgaveliste: LinkedList<OppgaveClass> = LinkedList()
     /*         Internal methods             */
@@ -60,6 +64,10 @@ object Kassequeue {
 
     @Synchronized fun retrieveMelding() : MutableMap<VareClass, Double> {
         return kasseliste.removeFirst()
+    }
+
+    @Synchronized fun emptyQueue(): Boolean {
+        return kasseliste.isEmpty()
     }
 
 }

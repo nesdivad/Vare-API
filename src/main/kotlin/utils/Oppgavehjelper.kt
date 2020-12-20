@@ -1,12 +1,35 @@
 package h577870.utils
 
 import h577870.entity.OppgaveType
+import h577870.entity.VareEgenskaperClass
 import kotlinx.datetime.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlin.math.floor
 
 @ExperimentalSerializationApi
 object Oppgavehjelper {
 
+    /*
+    Konverterer set med varer til map med bestillingsverdier.
+     */
+    fun setToMap(set: Set<VareEgenskaperClass>) : MutableMap<Long, Double> {
+        val map = mutableMapOf<Long, Double>()
+        set.forEach { elem ->
+            map[elem.ean] = computeOrder(elem)
+        }
+        assert(map.isNotEmpty())
+        return map
+    }
+    /*
+    Regner ut antall F-pk som skal bestilles inn. Foreløpig en enkel beregning.
+     */
+    private fun computeOrder(vareEC: VareEgenskaperClass) : Double {
+        return floor((vareEC.beholdning + (vareEC.prestasjonslager * 1.5)))
+    }
+
+    /*
+    Bestemmer neste bestillingsfrist.
+     */
     fun bestemFrist(enum: OppgaveType) : Instant {
         val current = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         when (enum) {

@@ -6,8 +6,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import kotlinx.datetime.*
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
 
 /**
  * @author Kristoffer Davidsen

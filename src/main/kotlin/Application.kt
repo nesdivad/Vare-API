@@ -1,5 +1,6 @@
 package h577870
 
+import h577870.controllers.ApplicationController
 import h577870.dao.DatabaseFactory
 import h577870.entity.*
 import h577870.routes.registerBrukerRoutes
@@ -15,6 +16,7 @@ import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.serialization.*
 import io.ktor.util.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,12 +39,6 @@ fun Application.module() {
         json()
     }
 
-    /*
-    install(Sessions) {
-        header<SessionHeader>("SESSION")
-    }
-     */
-
     install(Authentication) {
         jwt {
             verifier(simpleJWT.verifier)
@@ -50,7 +46,6 @@ fun Application.module() {
                 UserIdPrincipal(it.payload.getClaim("name").asString())
             }
         }
-
     }
 
     //Registrerer endepunkter for Vare-databasen.
@@ -60,29 +55,6 @@ fun Application.module() {
     registerKasseRouting()
     //Initialiserer databasetilkobling.
     DatabaseFactory.init()
-
-    transaction {
-
-    }
-
-    /*
-    val oppgave = OppgaveClass(
-        oppgaveid = 10,
-        brukerid = "admin",
-        tittel = "Testoppgave",
-        beskrivelse = "Foerste test av implementasjon",
-        vareliste = mutableMapOf(
-            7020655841165 to 2.0,
-            7032069723586 to 4.0,
-            5021991941757 to 10.0,
-            7032069730249 to 7.0,
-            7038080080882 to 6.0
-        ),
-        type = OppgaveType.KONTROLL,
-        status = OppgaveStatus.PAAGAAR
-    )
-    print(Json.encodeToString(oppgave))
-
-     */
+    ApplicationController.init()
 }
 

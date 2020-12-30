@@ -28,9 +28,7 @@ class BrukerService {
     private fun convertBruker(row: ResultRow): BrukerClass {
         return BrukerClass(
                 brukernavn = row[Bruker.brukernavn],
-                passord = row[Bruker.passord],
-                butikknr = row[Bruker.butikknr],
-                privilege = row[Bruker.privilege]
+                passord = row[Bruker.passord]
         )
     }
 

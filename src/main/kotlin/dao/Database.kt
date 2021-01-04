@@ -38,7 +38,7 @@ object DatabaseFactory {
         hikariConfig.jdbcUrl = "$dbUrl?currentSchema=varer"
         hikariConfig.username = dbUser
         hikariConfig.password = dbPassword
-        hikariConfig.maximumPoolSize = 2
+        hikariConfig.maximumPoolSize = 1 //Kun nødvendig med 1 db-tråd i development.
         hikariConfig.isAutoCommit = false
         hikariConfig.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         hikariConfig.validate()

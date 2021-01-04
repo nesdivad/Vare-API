@@ -55,18 +55,18 @@ object Oppgaveequeue {
 
 object Kassequeue {
 
-    private val kasseliste: MutableList<MutableMap<VareClass, Double>> = mutableListOf()
+    private val kasseliste: MutableList<MutableMap<Long, Double>> = mutableListOf()
 
     @Synchronized fun addMelding(melding: String) {
-        val decoded = Json.decodeFromString<MutableMap<VareClass, Double>>(melding)
+        val decoded = Json.decodeFromString<MutableMap<Long, Double>>(melding)
         kasseliste.add(decoded)
     }
 
-    @Synchronized fun retrieveMelding() : MutableMap<VareClass, Double> {
+    @Synchronized fun retrieveMelding() : MutableMap<Long, Double> {
         return kasseliste.removeFirst()
     }
 
-    @Synchronized fun emptyQueue(): Boolean {
+    @Synchronized fun emptyQueue() : Boolean {
         return kasseliste.isEmpty()
     }
 

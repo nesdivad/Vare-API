@@ -18,6 +18,10 @@ object EgenskapController {
                  if (!Kassequeue.emptyQueue()) {
                      val nextMeld = Kassequeue.retrieveMelding()
                      nextMeld.forEach { (t, u) ->
+                         /*
+                         TODO: Optimisering trengs. Kjører én transaksjon pr vare.
+                         TODO: Lage batch-oppdatering?
+                          */
                         vareeservice.oppdaterMedEan(t, u)
                      }
                  }

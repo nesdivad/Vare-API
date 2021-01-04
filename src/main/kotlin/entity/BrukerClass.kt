@@ -1,5 +1,6 @@
 package h577870.entity
 
+import io.ktor.auth.*
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
@@ -15,6 +16,6 @@ object Bruker : Table() {
 data class BrukerClass(
         val brukernavn: String,
         val passord: String
-) {
+) : Principal {
     constructor(brukernavn: String, passord: String, privilege: Boolean): this(brukernavn, passord)
 }

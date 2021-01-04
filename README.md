@@ -12,4 +12,9 @@
     - Forbindelse med database.
 * Netty:
     - API-et kjører på en Netty-server.
-    
+  
+## Litt om JWT og serversesjon:
+  * Bruker logger inn, og dersom suksess, sender jwt-token i body til brukeragent.
+  * Brukeragent legger denne inn som header i fremtidige requests til server, slik:
+    - {"Authorization":"Bearer \<sett inn token her>"}
+  * Serversesjon sendes som http-only cookie, og benyttes ikke av brukeragent.

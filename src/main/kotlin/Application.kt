@@ -2,6 +2,7 @@ package h577870
 
 import h577870.controllers.ApplicationController
 import h577870.dao.DatabaseFactory
+import h577870.entity.BrukerClass
 import h577870.routes.registerBrukerRoutes
 import h577870.routes.registerKasseRouting
 import h577870.routes.registerOppgaveRoutes
@@ -24,7 +25,10 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 fun Application.module() {
 
-    val simpleJWT = JwtToken(environment.config.property("jwt.secret").getString())
+    val simpleJWT = JwtToken(environment.config.property("jwt.secret").getString(),
+        environment.config.property("jwt.audience").getString())
+    val jwtrealm = environment.config.property("jwt.realm").getString()
+    val jwtaudience = environment.config.property("jwt.audience").getString()
 
     install(ContentNegotiation) {
         json()
@@ -43,9 +47,14 @@ fun Application.module() {
 
     install(Authentication) {
         jwt {
+            realm = jwtrealm
             verifier(simpleJWT.verifier)
             validate {
-                UserIdPrincipal(it.payload.getClaim("name").asString())
+                val username = it.payload.getClaim("brukernavn").asString()
+                val password = it.payload.getClaim("passord").asString()
+                if (username != null && password != null) {
+                    BrukerClass(username, password)
+                } else null
             }
         }
     }

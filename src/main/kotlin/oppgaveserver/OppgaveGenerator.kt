@@ -113,5 +113,9 @@ object OppgaveGenerator {
         brukerid = id
     }
 
+    fun clearBrukerid() {
+        brukerid = null.toString()
+    }
+
 
 }

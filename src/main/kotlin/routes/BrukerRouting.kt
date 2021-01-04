@@ -7,6 +7,7 @@ import h577870.security.VareSession
 import h577870.utils.ErrorMessages
 import h577870.utils.brukerservice
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -18,7 +19,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 @ExperimentalSerializationApi
 @KtorExperimentalAPI
 private fun Route.brukerRouting() {
-    val simplejwt = JwtToken(application.environment.config.property("jwt.secret").getString())
+
+    val audience = application.environment.config.property("jwt.audience").getString()
+    val simplejwt = JwtToken(application.environment.config.property("jwt.secret").getString(),
+        audience)
+
     route("/bruker") {
         /*
         For innlogging
@@ -29,13 +34,11 @@ private fun Route.brukerRouting() {
                 val dbbruker = brukerservice.hentBruker(body.brukernavn)
                 requireNotNull(dbbruker)
 
-                //Sjekk om det finnes sesjon fra før.
-                if (call.sessions.get(dbbruker.brukernavn) != null) {
-                    call.respond(HttpStatusCode.OK, "Already logged in.")
-                }
                 //Sjekk om brukernavn og/eller passord matcher.
                 if (brukerservice.kontrollerBruker(body, dbbruker)) {
-                    call.response.headers.append("jwttoken", simplejwt.sign(dbbruker.brukernavn))
+                    //Sjekk om det finnes sesjon fra før.
+                    val token = simplejwt.sign(dbbruker, audience)
+                    call.response.headers.append(name = "jwt", value = token)
                     //Lager ny serversesjon.
                     call.sessions.set(VareSession(dbbruker.brukernavn, 300))
                     call.respond(HttpStatusCode.OK, "Logged in.")
@@ -50,7 +53,16 @@ private fun Route.brukerRouting() {
 
         }
         post("/loggut") {
-
+            val body = call.receive<String>() //bruker
+            val usertoken = call.request.authorization() ?: ""
+            if (call.sessions.get(body) != null && usertoken.isNotEmpty()) {
+                call.sessions.clear(body)
+                call.respondText(status = HttpStatusCode.OK, text = "Logged out.")
+            }
+            else {
+                call.respondText(text = "Already logged out", status = HttpStatusCode.OK)
+            }
+            OppgaveGenerator.clearBrukerid()
         }
     }
 }

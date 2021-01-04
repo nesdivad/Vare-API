@@ -14,7 +14,7 @@ private fun Route.kasseRouting() {
             runCatching {
                 val body = call.receive<String>()
                 Kassequeue.addMelding(body)
-                call.respondText(text = "Accepted", status = HttpStatusCode.Accepted)
+                call.respondText(text = "OK", status = HttpStatusCode.OK)
             }.onFailure {
                 ErrorMessages.returnMessage(it, call)
             }

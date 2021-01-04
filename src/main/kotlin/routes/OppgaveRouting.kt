@@ -12,6 +12,10 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 
+/*
+TODO: Sjekke sesjon for alle ruter.
+ */
+
 @ExperimentalSerializationApi
 @KtorExperimentalAPI
 private fun Route.oppgaveRoutes() {

@@ -14,5 +14,6 @@ val brukerservice = BrukerService()
 @ExperimentalSerializationApi
 @KtorExperimentalAPI
 val oppgaveservice = OppgaveService()
+@KtorExperimentalAPI
 val vareeservice = VareEService()
 val validator = Validator()

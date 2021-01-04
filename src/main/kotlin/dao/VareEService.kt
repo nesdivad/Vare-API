@@ -35,8 +35,8 @@ class VareEService {
         VareEgenskaper.selectAll().mapNotNull { convert(it) }.toSet()
     }
 
-    suspend fun oppdaterMedEan(vare: VareClass, newValue: Double) = dbQuery {
-        VareEgenskaper.update({VareEgenskaper.ean eq vare.ean}) {
+    suspend fun oppdaterMedEan(ean: Long, newValue: Double) = dbQuery {
+        VareEgenskaper.update({VareEgenskaper.ean eq ean}) {
             with(SqlExpressionBuilder) {
                 it.update(beholdning, beholdning - newValue)
             }

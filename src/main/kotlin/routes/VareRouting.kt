@@ -3,6 +3,7 @@ package h577870.routes
 import h577870.dao.VareService
 import h577870.entity.VareClass
 import h577870.entity.VareEgenskaperClass
+import h577870.security.JwtToken
 import h577870.utils.*
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -14,6 +15,11 @@ import io.ktor.util.*
 
 //Objekt for databaseoperasjoner.
 @KtorExperimentalAPI
+
+
+/*
+TODO: Sjekke sesjon for alle ruter.
+ */
 
 private fun Route.vareRoutesGet() {
     authenticate {

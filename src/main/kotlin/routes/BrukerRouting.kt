@@ -30,6 +30,7 @@ private fun Route.brukerRouting() {
          */
         post("logginn") {
             runCatching {
+                print("hello")
                 val body = call.receive<BrukerClass>()
                 val dbbruker = brukerservice.hentBruker(body.brukernavn)
                 requireNotNull(dbbruker)
@@ -43,7 +44,7 @@ private fun Route.brukerRouting() {
                     call.sessions.set(VareSession(dbbruker.brukernavn, 300))
                     call.respond(HttpStatusCode.OK, "Logged in.")
                     //Forteller oppgavegenerator hvilken bruker som er logget inn.
-                    OppgaveGenerator.initBrukerid(dbbruker.brukernavn)
+                    OppgaveGenerator.initBrukerid(dbbruker.brukernavn).also {print(dbbruker.brukernavn)}
                 } else {
                     call.respond(HttpStatusCode.Unauthorized, "Credentials are not correct.")
                 }
@@ -53,16 +54,21 @@ private fun Route.brukerRouting() {
 
         }
         post("/loggut") {
-            val body = call.receive<String>() //bruker
-            val usertoken = call.request.authorization() ?: ""
-            if (call.sessions.get(body) != null && usertoken.isNotEmpty()) {
-                call.sessions.clear(body)
-                call.respondText(status = HttpStatusCode.OK, text = "Logged out.")
+            runCatching {
+                val body = call.receive<String>()//bruker
+                val usertoken = call.request.authorization() ?: ""
+                if (call.sessions.get(body) != null && usertoken.isNotEmpty()) {
+                    call.sessions.clear(body)
+                    call.respondText(status = HttpStatusCode.OK, text = "Logged out.")
+                    //TODO: Svartelisting av brukt token?
+                }
+                else {
+                    call.respondText(text = "Already logged out", status = HttpStatusCode.OK)
+                }
+                OppgaveGenerator.clearBrukerid()
+            }.onFailure {
+                ErrorMessages.returnMessage(it, call)
             }
-            else {
-                call.respondText(text = "Already logged out", status = HttpStatusCode.OK)
-            }
-            OppgaveGenerator.clearBrukerid()
         }
     }
 }

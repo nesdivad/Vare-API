@@ -13,13 +13,17 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.serialization.*
 import io.ktor.sessions.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+@ExperimentalTime
 @ExperimentalSerializationApi
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
@@ -28,10 +32,16 @@ fun Application.module() {
     val simpleJWT = JwtToken(environment.config.property("jwt.secret").getString(),
         environment.config.property("jwt.audience").getString())
     val jwtrealm = environment.config.property("jwt.realm").getString()
-    val jwtaudience = environment.config.property("jwt.audience").getString()
 
     install(ContentNegotiation) {
         json()
+    }
+
+    install(CORS) {
+        anyHost()
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
+        maxAgeDuration = Duration.INFINITE
     }
 
     install(Sessions) {

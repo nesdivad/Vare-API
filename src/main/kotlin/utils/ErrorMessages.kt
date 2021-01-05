@@ -11,12 +11,23 @@ class ErrorMessages {
     companion object {
         suspend fun returnMessage(it: Throwable, call: ApplicationCall) {
             when (it) {
-                is ContentTransformationException -> call.respondText("Kunne ikke hente body fra request",
+                is ContentTransformationException -> {
+                    call.respondText("Kunne ikke hente body fra request",
                         status = HttpStatusCode.BadRequest)
-                is AssertionError -> call.respondText("Finnes ikke i databasen",
-                        status = HttpStatusCode.NotFound)
-                is IllegalArgumentException -> call.respondText("Body fra request er feil",
+                    print(it)
+                }
+                is AssertionError -> {
+                    call.respondText(
+                        "Finnes ikke i databasen",
+                        status = HttpStatusCode.NotFound
+                    )
+                    print(it)
+                }
+                is IllegalArgumentException -> {
+                    call.respondText("Body fra request er feil",
                         status = HttpStatusCode.BadRequest)
+                    print(it)
+                }
                 else -> call.respondText("En feil oppsto: ${it.localizedMessage}")
             }
         }

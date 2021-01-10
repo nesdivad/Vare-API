@@ -3,17 +3,14 @@ package h577870.controllers
 import h577870.oppgaveserver.Kassequeue
 import h577870.utils.vareeservice
 import io.ktor.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 @KtorExperimentalAPI
 object EgenskapController {
 
     fun updateEgenskaper() {
         var bool = true
-        CoroutineScope(context = Dispatchers.IO).launch {
+        CoroutineScope(context = Dispatchers.Default).launch {
             while (bool) {
                  if (!Kassequeue.emptyQueue()) {
                      val nextMeld = Kassequeue.retrieveMelding()

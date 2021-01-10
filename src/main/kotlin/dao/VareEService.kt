@@ -23,9 +23,9 @@ class VareEService {
             this[VareEgenskaper.snittsalg] = vareEgenskaperClass.snittsalg
         }
     }
-    suspend fun hentMedEan(vare: VareClass) = dbQuery {
+    suspend fun hentMedEan(ean: Long) = dbQuery {
         VareEgenskaper.select {
-            (VareEgenskaper.ean eq vare.ean)
+            (VareEgenskaper.ean eq ean)
         }.mapNotNull {
             convert(it)
         }.singleOrNull()

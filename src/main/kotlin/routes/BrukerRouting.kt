@@ -30,7 +30,6 @@ private fun Route.brukerRouting() {
          */
         post("logginn") {
             runCatching {
-                print("hello")
                 val body = call.receive<BrukerClass>()
                 val dbbruker = brukerservice.hentBruker(body.brukernavn)
                 requireNotNull(dbbruker)
@@ -39,10 +38,14 @@ private fun Route.brukerRouting() {
                 if (brukerservice.kontrollerBruker(body, dbbruker)) {
                     //Sjekk om det finnes sesjon fra før.
                     val token = simplejwt.sign(dbbruker, audience)
-                    call.response.headers.append(name = "jwt", value = token)
+                    call.response.cookies.append(name = "jwt", value = "Bearer $token")
                     //Lager ny serversesjon.
                     call.sessions.set(VareSession(dbbruker.brukernavn, 300))
-                    call.respond(HttpStatusCode.OK, "Logged in.")
+                    call.respondText(
+                        contentType = ContentType.Application.Json,
+                        status = HttpStatusCode.OK,
+                        text = "Logged in."
+                    )
                     //Forteller oppgavegenerator hvilken bruker som er logget inn.
                     OppgaveGenerator.initBrukerid(dbbruker.brukernavn).also {print(dbbruker.brukernavn)}
                 } else {

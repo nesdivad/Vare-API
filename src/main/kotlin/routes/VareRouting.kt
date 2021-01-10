@@ -99,12 +99,33 @@ private fun Route.vareRoutesPost() {
     }
 }
 
+@KtorExperimentalAPI
+private fun Route.egenskaperRouting() {
+    authenticate {
+        route("/vare") {
+            route("/egenskap") {
+                get("/{ean}") {
+                    val ean = call.parameters["ean"] ?:
+                    call.respondText("Bad request", status = HttpStatusCode.BadRequest)
+                    runCatching {
+                        require(validator.validateEan(ean))
+                    }.onFailure { ErrorMessages.returnMessage(it, call) }
+                    val vareEgenskap = vareeservice.hentMedEan(ean as Long) ?:
+                        call.respondText("Ingen egenskaper med ean", status = HttpStatusCode.NotFound)
+                    call.respond(vareEgenskap)
+                }
+            }
+        }
+    }
+}
+
 //Utvidelsesfunksjon for Application som henter endepunkter for vare.
 @KtorExperimentalAPI
 fun Application.registerVareRoutes() {
     routing {
         vareRoutesGet()
         vareRoutesPost()
+        egenskaperRouting()
     }
 }
 

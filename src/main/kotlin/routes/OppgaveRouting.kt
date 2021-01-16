@@ -31,7 +31,7 @@ private fun Route.oppgaveRoutes() {
                 )
                 val response = oppgaveservice.hentOppgaverMedBrukerid(brukerid.toString())
                         ?: call.respondText("Brukerid finnes ikke", status = HttpStatusCode.NotFound)
-                call.respond(response)
+                call.respond(HttpStatusCode.OK, response)
             }
             post("ny") {
                 runCatching {

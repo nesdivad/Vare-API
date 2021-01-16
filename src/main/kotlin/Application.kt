@@ -39,6 +39,7 @@ fun Application.module() {
 
     install(CORS) {
         anyHost()
+        header(HttpHeaders.AccessControlAllowOrigin)
         allowCredentials = true
         allowNonSimpleContentTypes = true
         maxAgeDuration = Duration.INFINITE

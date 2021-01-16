@@ -38,7 +38,7 @@ private fun Route.brukerRouting() {
                 if (brukerservice.kontrollerBruker(body, dbbruker)) {
                     //Sjekk om det finnes sesjon fra før.
                     val token = simplejwt.sign(dbbruker, audience)
-                    call.response.cookies.append(name = "jwt", value = "Bearer $token")
+                    call.response.cookies.append(name = "jwt", value = "Bearer $token", httpOnly = true)
                     //Lager ny serversesjon.
                     call.sessions.set(VareSession(dbbruker.brukernavn, 300))
                     call.respondText(

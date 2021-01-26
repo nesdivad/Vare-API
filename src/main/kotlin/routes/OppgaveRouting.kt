@@ -22,8 +22,8 @@ private fun Route.oppgaveRoutes() {
     authenticate {
         route("oppgave") {
             /*
-        Hent alle oppgaver for en bruker
-         */
+            Hent alle oppgaver for en bruker
+            */
             get("{brukerid}") {
                 val brukerid = call.parameters["brukerid"] ?: call.respondText(
                         "Bad request for parameter {brukerid}",

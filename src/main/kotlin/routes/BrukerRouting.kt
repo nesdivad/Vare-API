@@ -38,14 +38,9 @@ private fun Route.brukerRouting() {
                 if (brukerservice.kontrollerBruker(body, dbbruker)) {
                     //Sjekk om det finnes sesjon fra før.
                     val token = simplejwt.sign(dbbruker, audience)
-                    call.response.cookies.append(name = "jwt", value = "Bearer $token", httpOnly = true)
                     //Lager ny serversesjon.
                     call.sessions.set(VareSession(dbbruker.brukernavn, 300))
-                    call.respondText(
-                        contentType = ContentType.Application.Json,
-                        status = HttpStatusCode.OK,
-                        text = "Logged in."
-                    )
+                    call.respond(HttpStatusCode.OK, "Bearer $token")
                     //Forteller oppgavegenerator hvilken bruker som er logget inn.
                     OppgaveGenerator.initBrukerid(dbbruker.brukernavn).also {print(dbbruker.brukernavn)}
                 } else {

@@ -18,6 +18,12 @@ import kotlinx.datetime.*
  *
  */
 
+/*
+TODO: org.jetbrains.exposed.exceptions.ExposedSQLException: org.postgresql.util.PSQLException:
+ ERROR: column oppgave.tidogdato does not exist
+  Position: 126
+ */
+
 @ExperimentalSerializationApi
 @Serializable
 data class OppgaveClass(

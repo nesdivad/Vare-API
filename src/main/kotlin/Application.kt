@@ -2,13 +2,15 @@ package h577870
 
 import h577870.controllers.ApplicationController
 import h577870.dao.DatabaseFactory
-import h577870.entity.BrukerClass
+import h577870.entity.*
 import h577870.routes.registerBrukerRoutes
 import h577870.routes.registerKasseRouting
 import h577870.routes.registerOppgaveRoutes
 import h577870.routes.registerVareRoutes
 import h577870.security.JwtToken
 import h577870.security.VareSession
+import h577870.utils.Oppgavehjelper
+import h577870.utils.oppgaveservice
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -17,7 +19,12 @@ import io.ktor.http.*
 import io.ktor.serialization.*
 import io.ktor.sessions.*
 import io.ktor.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
@@ -39,7 +46,9 @@ fun Application.module() {
 
     install(CORS) {
         anyHost()
+        header(HttpHeaders.Authorization)
         header(HttpHeaders.AccessControlAllowOrigin)
+        header(HttpHeaders.ContentType)
         allowCredentials = true
         allowNonSimpleContentTypes = true
         maxAgeDuration = Duration.INFINITE
@@ -78,5 +87,6 @@ fun Application.module() {
     //Initialiserer databasetilkobling.
     DatabaseFactory.init()
     ApplicationController.init()
+
 }
 

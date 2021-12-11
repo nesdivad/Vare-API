@@ -77,23 +77,24 @@ object OppgaveGenerator {
     private suspend fun generateBestilling(brukerid: String, map: MutableMap<Long, Double>): Int {
 
         return oppgaveservice.leggTilOppgave(
-        OppgaveClass(
-            oppgaveid = 0,
-            brukerid = brukerid,
-            tittel = "BESTILLING_${LocalDateTime.now()}",
-            beskrivelse = "Bestilling av varer.",
-            vareliste = map,
-            type = OppgaveType.BESTILLING,
-            status = OppgaveStatus.IKKESTARTET,
-            tidogdato = Clock.System.now(),
-            tidsfrist = Oppgavehjelper.bestemFrist(OppgaveType.BESTILLING),
-        ))
+            oppgaveClass = OppgaveClass(
+                oppgaveid = 0,
+                brukerid = brukerid,
+                tittel = "BESTILLING_${LocalDateTime.now()}",
+                beskrivelse = "Bestilling av varer.",
+                vareliste = map,
+                type = OppgaveType.BESTILLING,
+                status = OppgaveStatus.IKKESTARTET,
+                tidogdato = Clock.System.now(),
+                tidsfrist = Oppgavehjelper.bestemFrist(OppgaveType.BESTILLING),
+            )
+        )
     }
 
     private suspend fun oppdaterBestilling(nyliste: Map<Long, Double>, status: OppgaveStatus, id: Int): String {
         val dboppgave = oppgaveservice.hentOppgaveMedId(id) ?: return "Finner ikke oppgave i database."
         nyliste.forEach { (t, u) ->
-            dboppgave.vareliste.putIfAbsent(t,u) ?:
+            dboppgave.vareliste.putIfAbsent(t,u) ?: //Hvis varen ikke finnes fra før
             dboppgave.vareliste[t]?.let { dboppgave.vareliste.replace(t, it, u) }
         }
         if (dboppgave.status == OppgaveStatus.IKKESTARTET) dboppgave.status = status
